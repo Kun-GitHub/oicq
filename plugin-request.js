@@ -1,9 +1,6 @@
 "use strict"
 const { bot } = require("./index")
 
-// 同意好友申请
-bot.on("request.friend", e => e.approve())
-
 // 同意群邀请
 bot.on("request.group.invite", e => e.approve())
 
