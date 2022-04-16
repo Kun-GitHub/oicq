@@ -20,7 +20,7 @@ bot.on("message.group", function (msg) {
 		qihao = null;
 		qihao = m.substring(m.lastIndexOf("284"), m.lastIndexOf("284")+7);
 		if(null != qihao){
-			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&filter=1314", 1, 40, msg, groupName);
+			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&filter=1314", 1, 35, msg, groupName);
 		}
 	}
 })
@@ -43,12 +43,12 @@ function getServerInfo(url, temp, times, msg, groupName){
 					temp++;
 					setTimeout(function() {
 						return getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&filter=1314&type=end", temp, times, msg, groupName);
-					}, 2500);
+					}, 3000);
 				} else {
 					temp++;
 					setTimeout(function() {
 						return getServerInfo(url, temp, times, msg, groupName);
-					}, 2500);
+					}, 3000);
 				}
 			} else if(body.indexOf("无需提交") != -1){
 				return;
