@@ -8,11 +8,6 @@ let qihao = null;
 // 撤回和发送群消息
 bot.on("message.group", function (msg) {
 	const groupName = msg.group_name;
-	// if(groupName.indexOf("阿玛尼") != -1 || groupName.indexOf("YZM") != -1){
-	//
-	// } else {
-	//     return
-	// }
 
 	const m = msg.raw_message.replace(/\s/g, "")
 
@@ -20,6 +15,7 @@ bot.on("message.group", function (msg) {
 		qihao = null;
 		qihao = m.substring(m.lastIndexOf("284"), m.lastIndexOf("284")+7);
 		if(null != qihao){
+			console.log(groupName+":"+qihao);
 			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&filter=1314", 1, 35, msg, groupName);
 		}
 	}
@@ -35,7 +31,6 @@ function getServerInfo(url, temp, times, msg, groupName){
 			if(null == body){
 				return;
 			}
-			console.log(body);
 			if(body.indexOf("未找到对应数据") != -1){
 				if(temp > times){
 					return;
@@ -51,8 +46,12 @@ function getServerInfo(url, temp, times, msg, groupName){
 					}, 3000);
 				}
 			} else if(body.indexOf("无需提交") != -1){
+				console.log(url);
+				console.log(body);
 				return;
 			} else if(body.indexOf("操作成功") != -1){
+				console.log(url);
+				console.log(body);
 				let jsonObject = JSON.parse(body);
 				let result = jsonObject.result;
 
@@ -97,6 +96,8 @@ function getServerInfo(url, temp, times, msg, groupName){
 					}
 				}
 			} else {
+				console.log(url);
+				console.log(body);
 				return;
 			}
 		})
@@ -150,12 +151,13 @@ function cl(obj, score, digital, msg, groupName){
 	if(null != send){
 		setTimeout(function() {
 			msg.group.sendMsg(send);
+			console.log(groupName+":"+send);
 			http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+groupName+":"+send,(res)=>{
 			}).on("error",(e)=>{
 				console.log(`获取数据失败: ${e.message}`)
 				return;
 			})
-		}, 1000*15);
+		}, 1000*5);
 	}
 	return;
 }
