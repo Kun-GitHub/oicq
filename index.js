@@ -1,20 +1,26 @@
 "use strict"
 const { createClient } = require("oicq")
 
-const account = 3231674493
+const account = 1759792956
 // const account = 3012874523
 
 const bot = createClient(account)
 
-bot.on("system.login.qrcode", function (e) {
-	this.logger.mark("扫码后按Enter完成登录")
-	process.stdin.once("data", () => {
-		this.login()
-	})
-}).login()
+// bot.on("system.login.qrcode", function (e) {
+// 	this.logger.mark("扫码后按Enter完成登录")
+// 	process.stdin.once("data", () => {
+// 		this.login()
+// 	})
+// }).login()
 
 // //若弹出登录保护地址，去验证通过即可
-// bot.login("f6f15hnk4u")
+bot.login("hewei.888")
+bot.on("system.login.slider", ()=>{
+	process.stdin.once("data", (input)=>{
+		input = String(input).trim().replace("ticket:", "").trim().replace(/"/g, "");
+		bot.sliderLogin(input);
+	});
+});
 
 exports.bot = bot
 
