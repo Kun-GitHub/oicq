@@ -2,6 +2,7 @@
 const { createClient } = require("oicq")
 
 const account = 3231674493
+// const account = 3012874523
 
 const bot = createClient(account)
 
