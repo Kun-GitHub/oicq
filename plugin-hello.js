@@ -8,12 +8,19 @@ let qihao = null;
 // 撤回和发送群消息
 bot.on("message.group", function (msg) {
 	const groupName = msg.group_name;
+	if(groupName.indexOf("YZM") == -1){
+		return;
+	}
 
 	const m = msg.raw_message.replace(/\s/g, "")
-
-	if(m.indexOf("近20期") != -1 && m.indexOf("284") != -1){
+	if(m.indexOf("近20期") != -1 && (m.indexOf("286") != -1 || m.indexOf("285") != -1)){
 		qihao = null;
-		qihao = m.substring(m.lastIndexOf("284"), m.lastIndexOf("284")+7);
+		if(m.indexOf("286") != -1){
+			qihao = m.substring(m.lastIndexOf("286"), m.lastIndexOf("286")+7);
+		}
+		if(m.indexOf("285") != -1){
+			qihao = m.substring(m.lastIndexOf("285"), m.lastIndexOf("285")+7);
+		}
 		if(null != qihao){
 			console.log(groupName+":"+qihao);
 			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&filter=1314", 1, 35, msg, groupName);
