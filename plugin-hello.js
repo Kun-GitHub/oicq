@@ -4,27 +4,55 @@ const { bot } = require("./index")
 const http = require('http');
 
 let qihao = null;
+let map = [];
 
 // 撤回和发送群消息
 bot.on("message.group", function (msg) {
 	const groupName = msg.group_name;
-	if(groupName.indexOf("YZM") == -1){
-		return;
+
+	// //没有对应关键字的直接跳，有的能进到下一步
+	if(groupName.indexOf("ZWYG") != -1 || groupName.indexOf("派拉蒙") != -1){
+	} else {
+		return
 	}
 
 	const m = msg.raw_message.replace(/\s/g, "")
-	if(m.indexOf("近20期") != -1 && (m.indexOf("286") != -1 || m.indexOf("285") != -1)){
+	if(m.indexOf("近20期") != -1 && (m.indexOf("288") != -1 || m.indexOf("287") != -1)){
 		qihao = null;
-		if(m.indexOf("286") != -1){
-			qihao = m.substring(m.lastIndexOf("286"), m.lastIndexOf("286")+7);
+		if(m.indexOf("288") != -1){
+			qihao = m.substring(m.lastIndexOf("288"), m.lastIndexOf("288")+7);
 		}
-		if(m.indexOf("285") != -1){
-			qihao = m.substring(m.lastIndexOf("285"), m.lastIndexOf("285")+7);
+		if(m.indexOf("287") != -1){
+			qihao = m.substring(m.lastIndexOf("287"), m.lastIndexOf("287")+7);
 		}
 		if(null != qihao){
 			console.log(groupName+":"+qihao);
-			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&filter=1314", 1, 35, msg, groupName);
+
+			if(map.indexOf(groupName) != -1){
+				return;
+			}
+			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao, 1, 30, msg, groupName);
 		}
+	}
+
+	if(m.indexOf("鲲鹏") != -1 && m.indexOf("积分不足") != -1){
+		// bot.logout(false);
+		map.push(groupName);
+	}
+
+	if(m.indexOf("杰瑞") != -1 && m.indexOf("积分不足") != -1){
+		// bot.logout(false);
+		map.push(groupName);
+	}
+
+	if(m.indexOf("菩提") != -1 && m.indexOf("积分不足") != -1){
+		// bot.logout(false);
+		map.push(groupName);
+	}
+
+	if(m.indexOf("汤姆") != -1 && m.indexOf("积分不足") != -1){
+		// bot.logout(false);
+		map.push(groupName);
 	}
 })
 
@@ -44,7 +72,7 @@ function getServerInfo(url, temp, times, msg, groupName){
 				} else if(temp == times){
 					temp++;
 					setTimeout(function() {
-						return getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&filter=1314&type=end", temp, times, msg, groupName);
+						return getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&type=end", temp, times, msg, groupName);
 					}, 3000);
 				} else {
 					temp++;
@@ -53,12 +81,10 @@ function getServerInfo(url, temp, times, msg, groupName){
 					}, 3000);
 				}
 			} else if(body.indexOf("无需提交") != -1){
-				console.log(url);
-				console.log(body);
+				console.log(groupName+"："+body);
 				return;
 			} else if(body.indexOf("操作成功") != -1){
-				console.log(url);
-				console.log(body);
+				console.log(groupName+"："+body);
 				let jsonObject = JSON.parse(body);
 				let result = jsonObject.result;
 
@@ -67,15 +93,22 @@ function getServerInfo(url, temp, times, msg, groupName){
 				let score = result.score;
 				let digital = result.digital;
 
+				let b = null;
+				if(score/5 >= 50){
+					b = score/5;
+				} else if(score >= 100){
+					b = 50;
+				}
+
 				if((null == obj01 && null == obj02)){
 					return;
 				} else if(null != obj01 && null == obj02){
-					cl(obj01, score, digital, msg, groupName);
+					cl(obj01, score, digital, msg, groupName, b);
 				} else if(null != obj02 && null == obj01){
-					cl(obj02, score, digital, msg, groupName);
+					cl(obj02, score, digital, msg, groupName, b);
 				} else {
 					if(obj01 === obj02){
-						cl(obj01, score, digital, msg, groupName);
+						cl(obj01, score, digital, msg, groupName, b);
 					} else {
 						let s = null;
 						for (let i = 0; i < obj01.length; i++) {
@@ -87,13 +120,13 @@ function getServerInfo(url, temp, times, msg, groupName){
 						}
 						if(null != s){
 							if("大" === s){
-								cl("大"+getLetter(digital).charAt(1), score, digital, msg, groupName);
+								cl("大"+getLetter(digital).charAt(1), score, digital, msg, groupName, b);
 							} else if("小" === s){
-								cl("小"+getLetter(digital).charAt(1), score, digital, msg, groupName);
+								cl("小"+getLetter(digital).charAt(1), score, digital, msg, groupName, b);
 							}  else if("单" === s){
-								cl(getLetter(digital).charAt(0)+"单", score, digital, msg, groupName);
+								cl(getLetter(digital).charAt(0)+"单", score, digital, msg, groupName, b);
 							}  else if("双" === s){
-								cl(getLetter(digital).charAt(0)+"双", score, digital, msg, groupName);
+								cl(getLetter(digital).charAt(0)+"双", score, digital, msg, groupName, b);
 							} else {
 								return;
 							}
@@ -132,27 +165,63 @@ function getLetter(integer) {
 	return "  ";
 }
 
-function cl(obj, score, digital, msg, groupName){
+function cl(obj, score, digital, msg, groupName, b){
 	let send = null;
 	if ("大双" === obj) {
-		send = "大"+(score*2)+"小双"+score;
-	} else if ("大单" === obj) {
-		if(digital>13){
-			send = "大"+(score*2)+"小单"+score;
-		} else if (digital%2!=0) {
-			send = "单"+(score*2)+"大双"+score;
+		if(null == b){
+			send = "大"+(score*2)+"小双"+score;
 		} else {
-			send = "大"+(score*2)+"小单"+score;
+			let r = Math.random() * 10;
+			if(Math.floor(r)%2==0){
+				send = "大双"+score+" 14."+b+" 小双"+score+" 大单"+score;
+			} else {
+				send = "大单"+score+" 大双"+score+" 小双"+score+" 14."+b;
+			}
+		}
+	} else if ("大单" === obj) {
+		if(null == b){
+			if(digital>13){
+				send = "大"+(score*2)+" 小单"+score;
+			} else if (digital%2!=0) {
+				send = "单"+(score*2)+"大双"+score;
+			} else {
+				send = "大"+(score*2)+" 小单"+score;
+			}
+		} else {
+			let r = Math.random() * 10;
+			if(Math.floor(r)%2==0){
+				send = "13."+b+" 大"+(score*2)+"小单"+score;
+			} else {
+				send = "单"+(score*2)+" 14."+b+" 大双"+score;
+			}
 		}
 	} else if ("小单" === obj) {
-		send = "小"+(score*2)+"大单"+score;
-	} else if ("小双" === obj) {
-		if(digital<14){
-			send = "小"+(score*2)+"大双"+score;
-		} else if (digital%2==0) {
-			send = "双"+(score*2)+"小单"+score;
+		if(null == b){
+			send = "大单"+score+" 小"+(score*2);
 		} else {
-			send = "小"+(score*2)+"大双"+score;
+			let r = Math.random() * 10;
+			if(Math.floor(r)%2==0){
+				send = "小单"+score+" 13."+b+" 小双"+score+" 大单"+score;
+			} else {
+				send = "大单"+score+"小单"+score+" 小双"+score+" 13."+b;
+			}
+		}
+	} else if ("小双" === obj) {
+		if(null == b){
+			if(digital<14){
+				send = "小"+(score*2)+" 大双"+score;
+			} else if (digital%2==0) {
+				send = "双"+(score*2)+" 小单"+score;
+			} else {
+				send = "小"+(score*2)+" 大双"+score;
+			}
+		} else {
+			let r = Math.random() * 10;
+			if(Math.floor(r)%2==0){
+				send = "14."+b+" 小"+(score*2)+"大双"+score;
+			} else {
+				send = "双"+(score*2)+" 13."+b+" 小单"+score;
+			}
 		}
 	}
 	if(null != send){
