@@ -3,6 +3,8 @@ const { segment } = require("oicq")
 const { bot } = require("./index")
 const http = require('http');
 
+const sd = require('silly-datetime');
+
 let qihao = null;
 let map = [];
 
@@ -10,32 +12,98 @@ let map = [];
 bot.on("message.group", function (msg) {
 	const groupName = msg.group_name;
 
-	// //没有对应关键字的直接跳，有的能进到下一步
-	if(groupName.indexOf("ZWYG") != -1 || groupName.indexOf("派拉蒙") != -1){
-	} else {
-		return
-	}
+	// 匹配上的不能进行下去，多个用或||
+	// if(groupName.indexOf("SMT") != -1){
+	// 	return
+	// }
+
+	// 匹配上的进行下去，多个用或&&
+	// if(groupName.indexOf("派拉蒙") == -1){
+	// 	return;
+	// }
 
 	const m = msg.raw_message.replace(/\s/g, "")
-	if(m.indexOf("近20期") != -1 && (m.indexOf("288") != -1 || m.indexOf("287") != -1)){
-		qihao = null;
-		if(m.indexOf("288") != -1){
-			qihao = m.substring(m.lastIndexOf("288"), m.lastIndexOf("288")+7);
+	if(null != qihao && m.indexOf(qihao) != -1 && m.indexOf("总分") != -1 && m.indexOf("人") != -1){
+		if(m.indexOf("汤姆") != -1){
+			setTimeout(function() {
+				let b = m.substring(m.lastIndexOf("汤姆"), m.lastIndexOf("汤姆")+7);
+				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
+				}).on("error",(e)=>{
+					console.log(`获取数据失败: ${e.message}`)
+					return;
+				})
+			}, 1000*20);
+		} else if(m.indexOf("鲲鹏") != -1){
+			setTimeout(function() {
+				let b = m.substring(m.lastIndexOf("鲲鹏"), m.lastIndexOf("鲲鹏")+7);
+				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
+				}).on("error",(e)=>{
+					console.log(`获取数据失败: ${e.message}`)
+					return;
+				})
+			}, 1000*20);
+		} else if(m.indexOf("杰瑞") != -1){
+			setTimeout(function() {
+				let b = m.substring(m.lastIndexOf("杰瑞"), m.lastIndexOf("杰瑞")+7);
+				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
+				}).on("error",(e)=>{
+					console.log(`获取数据失败: ${e.message}`)
+					return;
+				})
+			}, 1000*20);
+		} else if(m.indexOf("贪婪") != -1){
+			setTimeout(function() {
+				let b = m.substring(m.lastIndexOf("贪婪"), m.lastIndexOf("贪婪")+7);
+				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
+				}).on("error",(e)=>{
+					console.log(`获取数据失败: ${e.message}`)
+					return;
+				})
+			}, 1000*20);
+		} else if(m.indexOf("菩提") != -1){
+			setTimeout(function() {
+				let b = m.substring(m.lastIndexOf("菩提"), m.lastIndexOf("菩提")+7);
+				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
+				}).on("error",(e)=>{
+					console.log(`获取数据失败: ${e.message}`)
+					return;
+				})
+			}, 1000*20);
 		}
-		if(m.indexOf("287") != -1){
-			qihao = m.substring(m.lastIndexOf("287"), m.lastIndexOf("287")+7);
+
+	}
+
+	if(m.indexOf("近20期") != -1 && (m.indexOf("290") != -1 || m.indexOf("289") != -1)){
+		qihao = null;
+		if(m.indexOf("290") != -1){
+			qihao = m.substring(m.lastIndexOf("290"), m.lastIndexOf("290")+7);
+		}
+		if(m.indexOf("289") != -1){
+			qihao = m.substring(m.lastIndexOf("289"), m.lastIndexOf("289")+7);
 		}
 		if(null != qihao){
-			console.log(groupName+":"+qihao);
+			console.log(sd.format(new Date(), 'YYYY-MM-DD HH:mm')+"  "+groupName+":"+qihao);
 
 			if(map.indexOf(groupName) != -1){
 				return;
 			}
-			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao, 1, 30, msg, groupName);
+
+			let r = Math.random() * 10;
+			let times = 30;
+			if(Math.floor(r)%2==0){
+				times = 35;
+			}
+
+			getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao, 1, times, msg, groupName);
 		}
 	}
 
 	if(m.indexOf("鲲鹏") != -1 && m.indexOf("积分不足") != -1){
+		// bot.logout(false);
+		map.push(groupName);
+	}
+
+	if(m.indexOf("贪婪") != -1 && m.indexOf("积分不足") != -1){
 		// bot.logout(false);
 		map.push(groupName);
 	}
@@ -67,18 +135,19 @@ function getServerInfo(url, temp, times, msg, groupName){
 				return;
 			}
 			if(body.indexOf("未找到对应数据") != -1){
+				// console.log(groupName+"："+body);
 				if(temp > times){
 					return;
 				} else if(temp == times){
 					temp++;
 					setTimeout(function() {
 						return getServerInfo("http://121.4.87.215:8582/digital/digitalAnalyseJnd/queryByRecordNumber?recordNumber="+qihao+"&type=end", temp, times, msg, groupName);
-					}, 3000);
+					}, 5000);
 				} else {
 					temp++;
 					setTimeout(function() {
 						return getServerInfo(url, temp, times, msg, groupName);
-					}, 3000);
+					}, 5000);
 				}
 			} else if(body.indexOf("无需提交") != -1){
 				console.log(groupName+"："+body);
@@ -183,16 +252,16 @@ function cl(obj, score, digital, msg, groupName, b){
 			if(digital>13){
 				send = "大"+(score*2)+" 小单"+score;
 			} else if (digital%2!=0) {
-				send = "单"+(score*2)+"大双"+score;
+				send = "大双"+score+"单"+(score*2);
 			} else {
 				send = "大"+(score*2)+" 小单"+score;
 			}
 		} else {
 			let r = Math.random() * 10;
 			if(Math.floor(r)%2==0){
-				send = "13."+b+" 大"+(score*2)+"小单"+score;
+				send = "13."+b+" 大单"+score+" 14."+b+" 小单"+score+"大双"+score;
 			} else {
-				send = "单"+(score*2)+" 14."+b+" 大双"+score;
+				send = "大双"+score+" 14."+b+" 大单"+score+" 13."+b+" 小单"+score;
 			}
 		}
 	} else if ("小单" === obj) {
@@ -211,16 +280,16 @@ function cl(obj, score, digital, msg, groupName, b){
 			if(digital<14){
 				send = "小"+(score*2)+" 大双"+score;
 			} else if (digital%2==0) {
-				send = "双"+(score*2)+" 小单"+score;
+				send = " 小单"+score+"双"+(score*2);
 			} else {
 				send = "小"+(score*2)+" 大双"+score;
 			}
 		} else {
 			let r = Math.random() * 10;
 			if(Math.floor(r)%2==0){
-				send = "14."+b+" 小"+(score*2)+"大双"+score;
+				send = "小双"+score+" 14."+b+" 大双"+score+"小单"+score+" 13."+b;
 			} else {
-				send = "双"+(score*2)+" 13."+b+" 小单"+score;
+				send = "小单"+score+"大双"+score+" 13."+b+" 14."+b+" 小双"+score;
 			}
 		}
 	}
