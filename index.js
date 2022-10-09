@@ -1,7 +1,7 @@
 "use strict"
 const { createClient } = require("oicq")
 
-const account = 1492728329
+const account = 1158014788
 
 const bot = createClient(account)
 
@@ -13,7 +13,7 @@ const bot = createClient(account)
 // }).login()
 
 // //若弹出登录保护地址，去验证通过即可
-bot.login("ztllh5992296087")
+bot.login("1234554321")
 bot.on("system.login.slider", ()=>{
 	process.stdin.once("data", (input)=>{
 		input = String(input).trim().replace("ticket:", "").trim().replace(/"/g, "");

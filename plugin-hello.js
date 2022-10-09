@@ -33,9 +33,9 @@ bot.on("message.group", function (msg) {
 					return;
 				})
 			}, 1000*20);
-		} else if(m.indexOf("鲲鹏") != -1){
+		} else if(m.indexOf("金蟾") != -1){
 			setTimeout(function() {
-				let b = m.substring(m.lastIndexOf("鲲鹏"), m.lastIndexOf("鲲鹏")+7);
+				let b = m.substring(m.lastIndexOf("金蟾"), m.lastIndexOf("金蟾")+7);
 				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
 				}).on("error",(e)=>{
 					console.log(`获取数据失败: ${e.message}`)
@@ -45,15 +45,6 @@ bot.on("message.group", function (msg) {
 		} else if(m.indexOf("杰瑞") != -1){
 			setTimeout(function() {
 				let b = m.substring(m.lastIndexOf("杰瑞"), m.lastIndexOf("杰瑞")+7);
-				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
-				}).on("error",(e)=>{
-					console.log(`获取数据失败: ${e.message}`)
-					return;
-				})
-			}, 1000*20);
-		} else if(m.indexOf("贪婪") != -1){
-			setTimeout(function() {
-				let b = m.substring(m.lastIndexOf("贪婪"), m.lastIndexOf("贪婪")+7);
 				http.get("http://121.4.87.215:8582/digital/digitalAnalyseJnd/saveBet?recordNumber="+qihao+"&bet="+b,(res)=>{
 				}).on("error",(e)=>{
 					console.log(`获取数据失败: ${e.message}`)
@@ -73,13 +64,13 @@ bot.on("message.group", function (msg) {
 
 	}
 
-	if(m.indexOf("近20期") != -1 && (m.indexOf("290") != -1 || m.indexOf("289") != -1)){
+	if((m.indexOf("近20期") != -1 || m.indexOf("近 20 期") != -1) && (m.indexOf("291") != -1 || m.indexOf("292") != -1)){
 		qihao = null;
-		if(m.indexOf("290") != -1){
-			qihao = m.substring(m.lastIndexOf("290"), m.lastIndexOf("290")+7);
+		if(m.indexOf("291") != -1){
+			qihao = m.substring(m.lastIndexOf("291"), m.lastIndexOf("291")+7);
 		}
-		if(m.indexOf("289") != -1){
-			qihao = m.substring(m.lastIndexOf("289"), m.lastIndexOf("289")+7);
+		if(m.indexOf("292") != -1){
+			qihao = m.substring(m.lastIndexOf("292"), m.lastIndexOf("292")+7);
 		}
 		if(null != qihao){
 			console.log(sd.format(new Date(), 'YYYY-MM-DD HH:mm')+"  "+groupName+":"+qihao);
@@ -98,7 +89,7 @@ bot.on("message.group", function (msg) {
 		}
 	}
 
-	if(m.indexOf("鲲鹏") != -1 && m.indexOf("积分不足") != -1){
+	if(m.indexOf("金蟾") != -1 && m.indexOf("积分不足") != -1){
 		// bot.logout(false);
 		map.push(groupName);
 	}
