@@ -24,7 +24,8 @@ bot.on("system.login.slider", ()=>{
 exports.bot = bot
 
 // template plugins
-require("./plugin-hello") //hello world
+// require("./plugin-sanmen") //三门
+require("./plugin-shuashui") //刷水
 require("./plugin-request") //加群和好友
 require("./plugin-online") //监听上线事件
 
