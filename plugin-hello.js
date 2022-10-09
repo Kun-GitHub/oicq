@@ -94,11 +94,6 @@ bot.on("message.group", function (msg) {
 		map.push(groupName);
 	}
 
-	if(m.indexOf("贪婪") != -1 && m.indexOf("积分不足") != -1){
-		// bot.logout(false);
-		map.push(groupName);
-	}
-
 	if(m.indexOf("杰瑞") != -1 && m.indexOf("积分不足") != -1){
 		// bot.logout(false);
 		map.push(groupName);
